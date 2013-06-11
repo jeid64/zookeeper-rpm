@@ -1,0 +1,14 @@
+[Unit]
+Description=Zookeeper
+
+[Service]
+Type=simple
+Environment=JAVA_HOME=/usr/lib/jvm/jre-1.7.0
+Environment=ZOO_LOG_DIR=/home/zookeeper
+WorkingDirectory=/home/zookeeper/zookeeper-3.4.5
+User=zookeeper
+ExecStart=/home/zookeeper/zookeeper-3.4.5/bin/zkServer.sh start-foreground
+SyslogIdentifier=zookeeper
+
+[Install]
+WantedBy=multi-user.service

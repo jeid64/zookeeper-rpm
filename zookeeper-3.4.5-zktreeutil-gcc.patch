@@ -1,0 +1,10 @@
+--- src/contrib/zktreeutil/src/ZkAdaptor.h	2012-09-30 19:53:32.000000000 +0200
++++ src/contrib/zktreeutil/src/ZkAdaptor.h-gil	2013-04-04 03:37:46.731950855 +0200
+@@ -21,6 +21,7 @@
+ 
+ #include <string>
+ #include <vector>
++#include <unistd.h>
+ 
+ extern "C" {
+ #include "zookeeper.h"

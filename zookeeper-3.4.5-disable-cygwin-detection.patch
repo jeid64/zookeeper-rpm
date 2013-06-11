@@ -1,0 +1,27 @@
+--- bin/zkServer.sh	2012-09-30 19:53:31.000000000 +0200
++++ bin/zkServer.sh-gil	2013-04-27 11:27:59.972764863 +0200
+@@ -69,15 +69,6 @@
+     ZOOCFG="$2"
+ fi
+ 
+-if $cygwin
+-then
+-    ZOOCFG=`cygpath -wp "$ZOOCFG"`
+-    # cygwin has a "kill" in the shell itself, gets confused
+-    KILL=/bin/kill
+-else
+-    KILL=kill
+-fi
+-
+ echo "Using config: $ZOOCFG" >&2
+ 
+ if [ -z $ZOOPIDFILE ]; then
+@@ -140,7 +131,7 @@
+     then
+       echo "no zookeeper to stop (could not find file $ZOOPIDFILE)"
+     else
+-      $KILL -9 $(cat "$ZOOPIDFILE")
++      kill -9 $(cat "$ZOOPIDFILE")
+       rm "$ZOOPIDFILE"
+       echo STOPPED
+     fi

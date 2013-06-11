@@ -1,0 +1,133 @@
+diff -Nru zookeeper-3.4.5/src/contrib/build-contrib.xml zookeeper-3.4.5-gil/src/contrib/build-contrib.xml
+--- zookeeper-3.4.5/src/contrib/build-contrib.xml	2012-09-30 19:53:32.000000000 +0200
++++ zookeeper-3.4.5-gil/src/contrib/build-contrib.xml	2013-04-27 11:51:59.684011892 +0200
+@@ -43,9 +43,9 @@
+ 
+   <property name="ivy.version" value="2.2.0"/>
+   <property name="ivy.url"
+-            value="http://repo2.maven.org/maven2/org/apache/ivy/ivy" />
++            value="file:/usr/share/java/" />
+   <property name="ivy.home" value="${user.home}/.ant" />
+-  <property name="ivy.lib" value="${build.dir}/lib"/>
++  <property name="ivy.lib" value="/usr/share/java"/>
+   <property name="ivy.test.lib" value="${build.test}/lib"/>
+   <property name="ivysettings.xml" value="${zk.root}/ivysettings.xml"/>
+ 
+@@ -70,24 +70,17 @@
+ 
+   <path id="classpath">
+     <pathelement location="${build.classes}"/>
+-    <!-- allow the user to override (e.g. if there are local versions) -->
+-    <fileset dir="${additional.lib.dir}">
+-      <include name="${additional.lib.dir.includes}" />
+-      <exclude name="${additional.lib.dir.excludes}" />
++    <fileset dir="/usr/share/java">
++      <include name="jline.jar" />
++      <include name="jtoaster.jar" />
++      <include name="log4j.jar" />
++      <include name="netty.jar" />
++      <include name="slf4j/api.jar" />
++      <include name="slf4j/log4j12.jar" />
++      <include name="xerces-j2.jar" />
+     </fileset>
+-    <fileset refid="lib.jars"/>
+-    <pathelement location="${zk.root}/build/classes"/>
+-    <fileset dir="${ivy.lib}">
+-      <include name="**/*.jar" />
+-    </fileset>
+-    <fileset dir="${ivy.test.lib}">
+-      <include name="**/*.jar" />
+-    </fileset>
+-    <fileset dir="${zk.root}/src/java/lib">
+-      <include name="**/*.jar" />
+-    </fileset>
+-    <fileset dir="${ant.home}/lib">
+-      <include name="ant.jar" />
++    <fileset dir="${zk.root}/build">
++      <include name="zookeeper-${version}.jar" />
+     </fileset>
+   </path>
+ 
+@@ -103,7 +96,7 @@
+     <mkdir dir="${ivy.lib}"/>
+     <mkdir dir="${ivy.test.lib}"/>
+     <condition property="ivy.jar.exists">
+-      <available file="${lib.dir}/ivy-${ivy.version}.jar"/>
++      <available file="${lib.dir}/ivy.jar"/>
+     </condition>
+ 
+     <antcall target="init-contrib"/>
+@@ -133,7 +126,7 @@
+   <target name="jar" depends="compile" unless="skip.contrib">
+     <echo message="contrib: ${name}"/>
+     <jar
+-      jarfile="${build.dir}/zookeeper-${version}-${name}.jar"
++      jarfile="${build.dir}/zookeeper-${name}.jar"
+       basedir="${build.classes}"      
+     />
+   </target>
+@@ -233,15 +226,9 @@
+   </target>
+ 
+   <target name="ivy-retrieve" depends="init,ivy-init">
+-    <ivy:retrieve settingsRef="${ant.project.name}" type="jar" conf="default"
+-                  pattern="${ivy.lib}/[artifact]-[revision].[ext]"/>
+-    <ivy:retrieve settingsRef="${ant.project.name}" type="bundle" conf="default"
+-  				  pattern="${ivy.lib}/[artifact]-[revision].[ext]"/>
+   </target>
+ 
+   <target name="ivy-retrieve-test" depends="init,ivy-init">
+-    <ivy:retrieve settingsRef="${ant.project.name}" type="jar" conf="test"
+-                  pattern="${ivy.test.lib}/[artifact]-[revision].[ext]"/>
+   </target>
+ 
+ 
+diff -Nru zookeeper-3.4.5/src/contrib/zooinspector/build.xml zookeeper-3.4.5-gil/src/contrib/zooinspector/build.xml
+--- zookeeper-3.4.5/src/contrib/zooinspector/build.xml	2012-09-30 19:53:32.000000000 +0200
++++ zookeeper-3.4.5-gil/src/contrib/zooinspector/build.xml	2013-04-27 11:42:13.257105341 +0200
+@@ -20,7 +20,7 @@
+ 
+ 
+ 	<target name="setjarname">
+-		<property name="jarname" value="${build.dir}/zookeeper-${version}-${name}.jar" />
++		<property name="jarname" value="${build.dir}/zookeeper-${name}-${version}.jar" />
+ 	</target>
+ 
+ 	<target name="init" depends="checkMainCompiled, zookeeperbuildcontrib.init">
+@@ -37,11 +37,11 @@
+ 			<fileset dir="${basedir}/config" />
+ 		</copy>
+ 		<copy todir="${build.dir}/lib">
+-			<fileset file="${basedir}/lib/jtoaster-1.0.4.jar" />
++			<!--fileset file="${basedir}/lib/jtoaster-1.0.4.jar" /-->
+ 			<fileset file="${basedir}/lib/log4j.properties" />
+ 		</copy>
+ 		<copy todir="${build.dir}/lib">
+-			<fileset file="../../../build/zookeeper-3.3.0.jar" />
++			<fileset file="../../../build/zookeeper-${version}.jar" />
+ 		</copy>
+ 		<copy todir="${build.dir}">
+ 			<fileset dir="${basedir}" includes="*.*" excludes="build.xml,ivy.xml" />
+@@ -55,7 +55,6 @@
+ 		<jar jarfile="${jarname}">
+ 			<manifest>
+ 				<attribute name="Main-Class" value="org.apache.zookeeper.inspector.ZooInspector" />
+-				<attribute name="Class-Path" value="lib/log4j-1.2.15.jar lib/TableLayout-20050920.jar lib/zookeeper-3.3.0.jar lib/jToaster-1.0.4.jar lib" />
+ 				<attribute name="Built-By" value="${user.name}" />
+ 				<attribute name="Built-At" value="${build.time}" />
+ 				<attribute name="Built-On" value="${host.name}" />
+@@ -140,12 +139,12 @@
+ 		<copy todir="${dist.dir}/contrib/${name}/config">
+ 			<fileset dir="${basedir}/config" />
+ 		</copy>
+-		<copy todir="${dist.dir}/contrib/${name}/lib">
++		<!--copy todir="${dist.dir}/contrib/${name}/lib">
+ 			<fileset file="${basedir}/lib/jtoaster-1.0.4.jar" />
+ 		</copy>
+ 		<copy todir="${dist.dir}/contrib/${name}/lib">
+ 			<fileset file="../../../build/zookeeper-3.3.0.jar" />
+-		</copy>
++		</copy-->
+ 	</target>
+ 
+ </project>
