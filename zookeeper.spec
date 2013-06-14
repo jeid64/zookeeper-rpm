@@ -1,7 +1,7 @@
 %global _hardened_build 1
 Name:          zookeeper
 Version:       3.4.5
-Release:       5%{?dist}
+Release:       6%{?dist}
 Summary:       A high-performance coordination service for distributed applications
 Group:         Development/Libraries
 License:       ASL 2.0 and BSD
@@ -20,6 +20,7 @@ Patch2:        %{name}-3.4.5-zktreeutil-gcc.patch
 Patch3:        %{name}-3.4.5-disable-cygwin-detection.patch
 Patch4:        %{name}-3.4.5-build-contrib.patch
 Patch5:        %{name}-3.4.5-add-PIE-and-RELRO.patch
+Patch6:        %{name}-3.4.5-atomic.patch
 
 BuildRequires: autoconf
 BuildRequires: automake
@@ -144,6 +145,7 @@ find -name "*.dll" -delete
 %patch3 -p0
 %patch4 -p1
 %patch5 -p1
+%patch6 -p1
 
 sed -i "s|<packaging>pom</packaging>|<packaging>jar</packaging>|" dist-maven/%{name}-%{version}.pom
 sed -i "s|<groupId>checkstyle</groupId>|<groupId>com.puppycrawl.tools</groupId>|" dist-maven/%{name}-%{version}.pom
@@ -305,6 +307,9 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 %doc LICENSE.txt NOTICE.txt src/contrib/zkpython/README
 
 %changelog
+* Fri Jun 14 2013 Dan Horák <dan[at]danny.cz> - 3.4.5-6
+- use fetch_and_add from GCC, fixes build on non-x86 arches
+
 * Tue Jun 11 2013  gil cattaneo <puntogil@libero.it> 3.4.5-5
 - fixed zookeeper.so non-standard-executable-perm thanks to Björn Esser
 
