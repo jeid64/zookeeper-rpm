@@ -1,0 +1,26 @@
+--- a/conf/log4j.properties	2012-09-30 12:53:31.000000000 -0500
++++ b/conf/log4j.properties	2013-06-25 12:28:56.833948571 -0500
+@@ -1,10 +1,11 @@
+ # Define some default values that can be overridden by system properties
+-zookeeper.root.logger=INFO, CONSOLE
++zookeeper.root.logger=INFO, SYSTEMD
+ zookeeper.console.threshold=INFO
+-zookeeper.log.dir=.
++zookeeper.systemd.threshold=INFO
++zookeeper.log.dir=/var/log/zookeeper
+ zookeeper.log.file=zookeeper.log
+ zookeeper.log.threshold=DEBUG
+-zookeeper.tracelog.dir=.
++zookeeper.tracelog.dir=/var/log/zookeeper
+ zookeeper.tracelog.file=zookeeper_trace.log
+ 
+ #
+@@ -56,3 +57,8 @@
+ log4j.appender.TRACEFILE.layout=org.apache.log4j.PatternLayout
+ ### Notice we are including log4j's NDC here (%x)
+ log4j.appender.TRACEFILE.layout.ConversionPattern=%d{ISO8601} [myid:%X{myid}] - %-5p [%t:%C{1}@%L][%x] - %m%n
++
++log4j.appender.SYSTEMD=org.apache.log4j.ConsoleAppender
++log4j.appender.SYSTEMD.Threshold=${zookeeper.systemd.threshold}
++log4j.appender.SYSTEMD.layout=org.apache.log4j.PatternLayout
++log4j.appender.SYSTEMD.layout.ConversionPattern=[myid:%X{myid}] - %-5p [%t:%C{1}@%L] - %m%n

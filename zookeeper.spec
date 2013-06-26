@@ -1,7 +1,7 @@
 %global _hardened_build 1
 Name:          zookeeper
 Version:       3.4.5
-Release:       6%{?dist}
+Release:       7%{?dist}
 Summary:       A high-performance coordination service for distributed applications
 Group:         Development/Libraries
 License:       ASL 2.0 and BSD
@@ -21,6 +21,8 @@ Patch3:        %{name}-3.4.5-disable-cygwin-detection.patch
 Patch4:        %{name}-3.4.5-build-contrib.patch
 Patch5:        %{name}-3.4.5-add-PIE-and-RELRO.patch
 Patch6:        %{name}-3.4.5-atomic.patch
+# remove date/time from console output since journald will keep track of date/time
+Patch7:        %{name}-3.4.5-log4j.patch
 
 BuildRequires: autoconf
 BuildRequires: automake
@@ -56,6 +58,8 @@ BuildRequires: xml-commons-apis
 # BuildRequires: apache-commons-collections
 # BuildRequires: apache-commons-lang
 # BuildRequires: jdiff
+
+BuildRequires: systemd
 
 %description
 ZooKeeper is a centralized service for maintaining configuration information,
@@ -122,6 +126,19 @@ Provides:      zkpython%{?_isa} = %{version}-%{release}
 %description -n python-ZooKeeper
 ZooKeeper python binding library
 
+%package server
+Group:         System Environment/Daemons
+Summary:       ZooKeeper server
+Requires:      %{name}-java = %{version}-%{release}
+Requires(post):   systemd
+Requires(preun):  systemd
+Requires(postun): systemd
+Requires(pre):    shadow-utils
+BuildArch:        noarch
+
+%description server
+ZooKeeper server
+
 %prep
 %setup -q
 find -name "*.jar" -delete
@@ -146,6 +163,7 @@ find -name "*.dll" -delete
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
+%patch7 -p1
 
 sed -i "s|<packaging>pom</packaging>|<packaging>jar</packaging>|" dist-maven/%{name}-%{version}.pom
 sed -i "s|<groupId>checkstyle</groupId>|<groupId>com.puppycrawl.tools</groupId>|" dist-maven/%{name}-%{version}.pom
@@ -161,6 +179,8 @@ sed -i 's/\r//' src/c/ChangeLog
 # fix build problem on f18
 sed -i 's|<exec executable="hostname" outputproperty="host.name"/>|<!--exec executable="hostname" outputproperty="host.name"/-->|' build.xml
 sed -i 's|<attribute name="Built-On" value="${host.name}" />|<attribute name="Built-On" value="${user.name}" />|' build.xml
+
+sed -i 's@^dataDir=.*$@dataDir=%{_sharedstatedir}/zookeeper/data\ndataLogDir=%{_sharedstatedir}/zookeeper/log@' conf/zoo_sample.cfg
 
 %build
 
@@ -258,14 +278,39 @@ popd
 
 find %{buildroot} -name '*.la' -exec rm -f {} ';'
 
+mkdir -p %{buildroot}%{_unitdir}
+mkdir -p %{buildroot}%{_sysconfdir}/zookeeper
+mkdir -p %{buildroot}%{_localstatedir}/log/zookeeper
+mkdir -p %{buildroot}%{_sharedstatedir}/zookeeper
+mkdir -p %{buildroot}%{_sharedstatedir}/zookeeper/data
+mkdir -p %{buildroot}%{_sharedstatedir}/zookeeper/log
+install -p -m 0644 %{SOURCE3} %{buildroot}%{_unitdir}
+install -p -m 0640 conf/log4j.properties %{buildroot}%{_sysconfdir}/zookeeper
+install -p -m 0640 conf/zoo_sample.cfg %{buildroot}%{_sysconfdir}/zookeeper
+touch %{buildroot}%{_sysconfdir}/zookeeper/zoo.cfg
+touch %{buildroot}%{_sharedstatedir}/zookeeper/data/myid
+
 # TODO
 # bin/zkCleanup.sh
 # bin/zkCli.sh
 # bin/zkEnv.sh
-# bin/zkServer.sh
 
 %post lib -p /sbin/ldconfig
 %postun lib -p /sbin/ldconfig
+
+%pre server
+getent group zookeeper >/dev/null || groupadd -r zookeeper
+getent passwd zookeeper >/dev/null || \
+    useradd -r -g zookeeper -d %{_sharedstatedir}/zookeeper -s /sbin/nologin \
+    -c "ZooKeeper service account" zookeeper
+%post server
+%systemd_post zookeeper.service
+
+%preun server
+%systemd_preun zookeeper.service
+
+%postun server
+%systemd_postun_with_restart zookeeper.service
 
 %files 
 %{_bindir}/cli_mt
@@ -306,7 +351,23 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 %{python_sitearch}/zookeeper.so
 %doc LICENSE.txt NOTICE.txt src/contrib/zkpython/README
 
+%files server
+%attr(0750,zookeeper,zookeeper) %dir %{_sysconfdir}/zookeeper
+%attr(0640,zookeeper,zookeeper) %ghost %config(noreplace) %{_sysconfdir}/zookeeper/zoo.cfg
+%attr(0640,zookeeper,zookeeper) %{_sysconfdir}/zookeeper/zoo_sample.cfg
+%attr(0640,zookeeper,zookeeper) %config(noreplace) %{_sysconfdir}/zookeeper/log4j.properties
+
+%attr(0750,zookeeper,zookeeper) %dir %{_localstatedir}/log/zookeeper
+%attr(0750,zookeeper,zookeeper) %dir %{_sharedstatedir}/zookeeper
+%attr(0750,zookeeper,zookeeper) %dir %{_sharedstatedir}/zookeeper/data
+%attr(0640,zookeeper,zookeeper) %ghost %{_sharedstatedir}/zookeeper/data/myid
+%attr(0750,zookeeper,zookeeper) %dir %{_sharedstatedir}/zookeeper/log
+%{_unitdir}/zookeeper.service
+
 %changelog
+* Tue Jun 25 2013 Jeffrey C. Ollie <jeff@ocjtech.us> - 3.4.5-7
+- add server subpackage
+
 * Fri Jun 14 2013 Dan Horák <dan[at]danny.cz> - 3.4.5-6
 - use fetch_and_add from GCC, fixes build on non-x86 arches
 
