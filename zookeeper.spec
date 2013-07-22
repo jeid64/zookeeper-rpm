@@ -1,7 +1,7 @@
 %global _hardened_build 1
 Name:          zookeeper
 Version:       3.4.5
-Release:       9%{?dist}
+Release:       10%{?dist}
 Summary:       A high-performance coordination service for distributed applications
 #Group:         Development/Libraries
 License:       ASL 2.0 and BSD
@@ -353,19 +353,22 @@ getent passwd zookeeper >/dev/null || \
 %doc LICENSE.txt NOTICE.txt src/contrib/zkpython/README
 
 %files server
-%dir %{_sysconfdir}/zookeeper
-%ghost %config(noreplace) %{_sysconfdir}/zookeeper/zoo.cfg
-%{_sysconfdir}/zookeeper/zoo_sample.cfg
-%config(noreplace) %{_sysconfdir}/zookeeper/log4j.properties
+%attr(0755,root,root) %dir %{_sysconfdir}/zookeeper
+%attr(0644,root,root) %ghost %config(noreplace) %{_sysconfdir}/zookeeper/zoo.cfg
+%attr(0644,root,root) %{_sysconfdir}/zookeeper/zoo_sample.cfg
+%attr(0644,root,root) %config(noreplace) %{_sysconfdir}/zookeeper/log4j.properties
 
 %attr(0750,zookeeper,zookeeper) %dir %{_localstatedir}/log/zookeeper
-%attr(0750,zookeeper,zookeeper) %dir %{_sharedstatedir}/zookeeper
+%attr(0755,root,root) %dir %{_sharedstatedir}/zookeeper
 %attr(0750,zookeeper,zookeeper) %dir %{_sharedstatedir}/zookeeper/data
 %attr(0640,zookeeper,zookeeper) %ghost %{_sharedstatedir}/zookeeper/data/myid
 %attr(0750,zookeeper,zookeeper) %dir %{_sharedstatedir}/zookeeper/log
 %{_unitdir}/zookeeper.service
 
 %changelog
+* Mon Jun 22 2013 Timothy St. Clair <tstclair@redhat.com> - 3.4.5-10
+- update permissions to be in line with default policies
+
 * Mon Jul 22 2013 gil cattaneo <puntogil@libero.it> 3.4.5-9
 - removed not needed %%defattr (only required for rpm < 4.4)
 - removed not needed Group fields (new package guideline)
