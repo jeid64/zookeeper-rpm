@@ -1,9 +1,9 @@
 %global _hardened_build 1
 Name:          zookeeper
 Version:       3.4.5
-Release:       8%{?dist}
+Release:       9%{?dist}
 Summary:       A high-performance coordination service for distributed applications
-Group:         Development/Libraries
+#Group:         Development/Libraries
 License:       ASL 2.0 and BSD
 URL:           http://zookeeper.apache.org/
 Source0:       http://www.apache.org/dist/%{name}/stable/%{name}-%{version}.tar.gz
@@ -67,14 +67,14 @@ naming, providing distributed synchronization, and providing group services.
 
 %package lib
 Summary:       Zookeeper C client library
-Group:         System Environment/Libraries
+#Group:         System Environment/Libraries
 
 %description lib
 ZooKeeper C client library for communicating with ZooKeeper Server.
 
 %package lib-devel
 Summary:       Development files for the %{name} library
-Group:         Development/Libraries
+#Group:         Development/Libraries
 Requires:      %{name}-lib%{?_isa} = %{version}-%{release}
 
 %description lib-devel
@@ -82,14 +82,14 @@ Development files for the ZooKeeper C client library.
 
 %package lib-doc
 Summary:       Documentation for the %{name} library
-Group:         Documentation
+#Group:         Documentation
 BuildArch:     noarch
 
 %description lib-doc
 Documentation for the ZooKeeper C client library.
 
 %package java
-Group:         Development/Libraries
+#Group:         Development/Libraries
 Summary:       Zookeeper Java client library
 # Requires:      felix-framework
 # Requires:      felix-osgi-compendium
@@ -110,7 +110,7 @@ BuildArch:     noarch
 This package provides a Java client interface to Zookeeper server.
 
 %package javadoc
-Group:         Documentation
+#Group:         Documentation
 Summary:       Javadoc for %{name}
 BuildArch:     noarch
 
@@ -118,7 +118,7 @@ BuildArch:     noarch
 This package contains javadoc for %{name}.
 
 %package -n python-ZooKeeper
-Group:         Development/Libraries
+#Group:         Development/Libraries
 Summary:       ZooKeeper python binding library
 Requires:      %{name}-lib%{?_isa} = %{version}-%{release}
 Provides:      zkpython%{?_isa} = %{version}-%{release}
@@ -127,7 +127,7 @@ Provides:      zkpython%{?_isa} = %{version}-%{release}
 ZooKeeper python binding library
 
 %package server
-Group:         System Environment/Daemons
+#Group:         System Environment/Daemons
 Summary:       ZooKeeper server
 Requires:      %{name}-java = %{version}-%{release}
 Requires(post):   systemd
@@ -313,7 +313,6 @@ getent passwd zookeeper >/dev/null || \
 %systemd_postun_with_restart zookeeper.service
 
 %files
-%defattr(-,root,root,-)
 %{_bindir}/cli_mt
 %{_bindir}/cli_st
 %{_bindir}/load_gen
@@ -321,23 +320,20 @@ getent passwd zookeeper >/dev/null || \
 %doc src/c/ChangeLog src/c/LICENSE src/c/NOTICE.txt src/c/README src/contrib/zktreeutil/README.txt
 
 %files lib
-%defattr(-,root,root,-)
 %{_libdir}/lib*.so.*
 %doc src/c/LICENSE src/c/NOTICE.txt
 
 %files lib-devel
-%defattr(-,root,root,-)
 %dir %{_includedir}/%{name}
 %{_includedir}/%{name}/*.h
 %{_libdir}/*.so
 %doc src/c/LICENSE src/c/NOTICE.txt
 
 %files lib-doc
-%defattr(-,root,root,-)
 %doc src/c/LICENSE src/c/NOTICE.txt src/c/docs/html/*
 
 %files java
-%defattr(-,root,root,-)
+%dir %{_javadir}/%{name}
 %{_javadir}/%{name}/%{name}.jar
 %{_javadir}/%{name}/%{name}-test.jar
 %{_javadir}/%{name}/%{name}-ZooInspector.jar
@@ -348,18 +344,15 @@ getent passwd zookeeper >/dev/null || \
 %doc CHANGES.txt LICENSE.txt NOTICE.txt README.txt
 
 %files javadoc
-%defattr(-,root,root,-)
 %{_javadocdir}/%{name}
 %doc LICENSE.txt NOTICE.txt
 
 %files -n python-ZooKeeper
-%defattr(-,root,root,-)
 %{python_sitearch}/ZooKeeper-?.?-py%{python_version}.egg-info
 %{python_sitearch}/zookeeper.so
 %doc LICENSE.txt NOTICE.txt src/contrib/zkpython/README
 
 %files server
-%defattr(-,root,root,-)
 %dir %{_sysconfdir}/zookeeper
 %ghost %config(noreplace) %{_sysconfdir}/zookeeper/zoo.cfg
 %{_sysconfdir}/zookeeper/zoo_sample.cfg
@@ -373,6 +366,11 @@ getent passwd zookeeper >/dev/null || \
 %{_unitdir}/zookeeper.service
 
 %changelog
+* Mon Jul 22 2013 gil cattaneo <puntogil@libero.it> 3.4.5-9
+- removed not needed %%defattr (only required for rpm < 4.4)
+- removed not needed Group fields (new package guideline)
+- fix directory ownership in java sub package
+
 * Tue Jun 15 2013 Timothy St. Clair <tstclair@redhat.com> - 3.4.5-8
 - cleanup file ownership properties.
 
