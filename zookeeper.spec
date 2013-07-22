@@ -1,7 +1,7 @@
 %global _hardened_build 1
 Name:          zookeeper
 Version:       3.4.5
-Release:       7%{?dist}
+Release:       8%{?dist}
 Summary:       A high-performance coordination service for distributed applications
 Group:         Development/Libraries
 License:       ASL 2.0 and BSD
