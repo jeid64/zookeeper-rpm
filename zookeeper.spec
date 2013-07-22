@@ -333,6 +333,7 @@ getent passwd zookeeper >/dev/null || \
 %doc src/c/LICENSE src/c/NOTICE.txt src/c/docs/html/*
 
 %files java
+%dir %{_javadir}/%{name}
 %{_javadir}/%{name}/%{name}.jar
 %{_javadir}/%{name}/%{name}-test.jar
 %{_javadir}/%{name}/%{name}-ZooInspector.jar
