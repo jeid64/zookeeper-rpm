@@ -312,7 +312,8 @@ getent passwd zookeeper >/dev/null || \
 %postun server
 %systemd_postun_with_restart zookeeper.service
 
-%files 
+%files
+%defattr(-,root,root,-)
 %{_bindir}/cli_mt
 %{_bindir}/cli_st
 %{_bindir}/load_gen
@@ -320,19 +321,23 @@ getent passwd zookeeper >/dev/null || \
 %doc src/c/ChangeLog src/c/LICENSE src/c/NOTICE.txt src/c/README src/contrib/zktreeutil/README.txt
 
 %files lib
+%defattr(-,root,root,-)
 %{_libdir}/lib*.so.*
 %doc src/c/LICENSE src/c/NOTICE.txt
 
 %files lib-devel
+%defattr(-,root,root,-)
 %dir %{_includedir}/%{name}
 %{_includedir}/%{name}/*.h
 %{_libdir}/*.so
 %doc src/c/LICENSE src/c/NOTICE.txt
 
 %files lib-doc
+%defattr(-,root,root,-)
 %doc src/c/LICENSE src/c/NOTICE.txt src/c/docs/html/*
 
 %files java
+%defattr(-,root,root,-)
 %{_javadir}/%{name}/%{name}.jar
 %{_javadir}/%{name}/%{name}-test.jar
 %{_javadir}/%{name}/%{name}-ZooInspector.jar
@@ -343,19 +348,22 @@ getent passwd zookeeper >/dev/null || \
 %doc CHANGES.txt LICENSE.txt NOTICE.txt README.txt
 
 %files javadoc
+%defattr(-,root,root,-)
 %{_javadocdir}/%{name}
 %doc LICENSE.txt NOTICE.txt
 
 %files -n python-ZooKeeper
+%defattr(-,root,root,-)
 %{python_sitearch}/ZooKeeper-?.?-py%{python_version}.egg-info
 %{python_sitearch}/zookeeper.so
 %doc LICENSE.txt NOTICE.txt src/contrib/zkpython/README
 
 %files server
-%attr(0750,zookeeper,zookeeper) %dir %{_sysconfdir}/zookeeper
-%attr(0640,zookeeper,zookeeper) %ghost %config(noreplace) %{_sysconfdir}/zookeeper/zoo.cfg
-%attr(0640,zookeeper,zookeeper) %{_sysconfdir}/zookeeper/zoo_sample.cfg
-%attr(0640,zookeeper,zookeeper) %config(noreplace) %{_sysconfdir}/zookeeper/log4j.properties
+%defattr(-,root,root,-)
+%dir %{_sysconfdir}/zookeeper
+%ghost %config(noreplace) %{_sysconfdir}/zookeeper/zoo.cfg
+%{_sysconfdir}/zookeeper/zoo_sample.cfg
+%config(noreplace) %{_sysconfdir}/zookeeper/log4j.properties
 
 %attr(0750,zookeeper,zookeeper) %dir %{_localstatedir}/log/zookeeper
 %attr(0750,zookeeper,zookeeper) %dir %{_sharedstatedir}/zookeeper
@@ -365,7 +373,10 @@ getent passwd zookeeper >/dev/null || \
 %{_unitdir}/zookeeper.service
 
 %changelog
-* Tue Jun 25 2013 Jeffrey C. Ollie <jeff@ocjtech.us> - 3.4.5-7
+* Tue Jun 15 2013 Timothy St. Clair <tstclair@redhat.com> - 3.4.5-8
+- cleanup file ownership properties.
+
+* Tue Jun 15 2013 Jeffrey C. Ollie <jeff@ocjtech.us> - 3.4.5-7
 - add server subpackage
 
 * Fri Jun 14 2013 Dan Horák <dan[at]danny.cz> - 3.4.5-6
