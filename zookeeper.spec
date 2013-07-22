@@ -367,7 +367,7 @@ getent passwd zookeeper >/dev/null || \
 
 %changelog
 * Mon Jun 22 2013 Timothy St. Clair <tstclair@redhat.com> - 3.4.5-9
-- revert old sematics %defattr and update permissions
+- revert old sematics defattr and update permissions
 
 * Mon Jun 22 2013 Timothy St. Clair <tstclair@redhat.com> - 3.4.5-8
 - cleanup file ownership properties.
