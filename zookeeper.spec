@@ -366,7 +366,7 @@ getent passwd zookeeper >/dev/null || \
 %{_unitdir}/zookeeper.service
 
 %changelog
-* Mon Jun 22 2013 Timothy St. Clair <tstclair@redhat.com> - 3.4.5-10
+* Mon Jul 22 2013 Timothy St. Clair <tstclair@redhat.com> - 3.4.5-10
 - update permissions to be in line with default policies
 
 * Mon Jul 22 2013 gil cattaneo <puntogil@libero.it> 3.4.5-9
@@ -374,7 +374,7 @@ getent passwd zookeeper >/dev/null || \
 - removed not needed Group fields (new package guideline)
 - fix directory ownership in java sub package
 
-* Tue Jun 15 2013 Timothy St. Clair <tstclair@redhat.com> - 3.4.5-8
+* Mon Jul 22 2013 Timothy St. Clair <tstclair@redhat.com> - 3.4.5-8
 - cleanup file ownership properties.
 
 * Tue Jun 15 2013 Jeffrey C. Ollie <jeff@ocjtech.us> - 3.4.5-7
