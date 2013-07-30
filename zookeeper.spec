@@ -1,7 +1,7 @@
 %global _hardened_build 1
 Name:          zookeeper
 Version:       3.4.5
-Release:       11%{?dist}
+Release:       12%{?dist}
 Summary:       A high-performance coordination service for distributed applications
 #Group:         Development/Libraries
 License:       ASL 2.0 and BSD
@@ -366,6 +366,9 @@ getent passwd zookeeper >/dev/null || \
 %{_unitdir}/zookeeper.service
 
 %changelog
+* Tue Jul 30 2013 Petr Machata <pmachata@redhat.com> - 3.4.5-12
+- Rebuild for boost 1.54.0
+
 * Tue Jul 30 2013 gil cattaneo <puntogil@libero.it> 3.4.5-11
 - fix changelog entries
 
