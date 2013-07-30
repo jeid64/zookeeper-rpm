@@ -367,7 +367,7 @@ getent passwd zookeeper >/dev/null || \
 
 %changelog
 * Tue Jul 30 2013 gil cattaneo <puntogil@libero.it> 3.4.5-11
-- Rebuild for boost 1.54.0
+- fix changelog entries
 
 * Mon Jul 22 2013 Timothy St. Clair <tstclair@redhat.com> - 3.4.5-10
 - update permissions to be in line with default policies
@@ -380,7 +380,7 @@ getent passwd zookeeper >/dev/null || \
 * Mon Jul 22 2013 Timothy St. Clair <tstclair@redhat.com> - 3.4.5-8
 - cleanup file ownership properties.
 
-* Tue Jun 15 2013 Jeffrey C. Ollie <jeff@ocjtech.us> - 3.4.5-7
+* Sat Jun 15 2013 Jeffrey C. Ollie <jeff@ocjtech.us> - 3.4.5-7
 - add server subpackage
 
 * Fri Jun 14 2013 Dan Horák <dan[at]danny.cz> - 3.4.5-6
